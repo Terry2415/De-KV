@@ -1,11 +1,13 @@
+De-KV is a decentralized k-v database baseing on ipfs and other decentralized storage 
+
 This is an implementation of the [LevelDB key/value database](http:code.google.com/p/leveldb) in the [Go programming language](http:golang.org).
 
-[![Build Status](https://travis-ci.org/syndtr/goleveldb.png?branch=master)](https://travis-ci.org/syndtr/goleveldb)
+[![Build Status](https://travis-ci.org/Terry2415/De-KV.png?branch=master)](https://travis-ci.org/Terry2415/De-KV)
 
 Installation
 -----------
 
-	go get github.com/syndtr/goleveldb/leveldb
+	go get github.com/Terry2415/De-KV/leveldb
 
 Requirements
 -----------
@@ -104,4 +106,4 @@ defer db.Close()
 Documentation
 -----------
 
-You can read package documentation [here](http:godoc.org/github.com/syndtr/goleveldb).
+You can read package documentation [here](http:godoc.org/github.com/Terry2415/De-KV).
