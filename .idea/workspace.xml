@@ -1,0 +1,660 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="d90d302b-c112-41f0-8baa-647350f51ea5" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/leveldb/batch.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/batch.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/batch_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/batch_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/bench_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/bench_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/cache/cache.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/cache/cache.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/comparer.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/comparer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/corrupt_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/corrupt_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/db.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/db.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/db_compaction.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/db_compaction.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/db_iter.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/db_iter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/db_snapshot.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/db_snapshot.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/db_state.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/db_state.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/db_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/db_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/db_transaction.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/db_transaction.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/db_util.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/db_util.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/db_write.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/db_write.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/errors.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/errors.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/errors/errors.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/errors/errors.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/external_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/external_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/filter.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/filter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/filter/bloom.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/filter/bloom.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/filter/bloom_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/filter/bloom_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/iterator/array_iter.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/iterator/array_iter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/iterator/array_iter_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/iterator/array_iter_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/iterator/indexed_iter.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/iterator/indexed_iter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/iterator/indexed_iter_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/iterator/indexed_iter_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/iterator/iter.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/iterator/iter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/iterator/iter_suite_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/iterator/iter_suite_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/iterator/merged_iter.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/iterator/merged_iter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/iterator/merged_iter_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/iterator/merged_iter_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/journal/journal.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/journal/journal.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/key.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/key.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/key_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/key_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/leveldb_suite_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/leveldb_suite_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/memdb/bench_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/memdb/bench_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/memdb/memdb.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/memdb/memdb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/memdb/memdb_suite_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/memdb/memdb_suite_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/memdb/memdb_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/memdb/memdb_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/opt/options.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/opt/options.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/options.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/options.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/session.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/session.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/session_compaction.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/session_compaction.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/session_record.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/session_record.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/session_util.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/session_util.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/storage.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/storage.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/storage/storage.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/storage/storage.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/table.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/table.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/table/block_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/table/block_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/table/reader.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/table/reader.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/table/table.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/table/table.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/table/table_suite_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/table/table_suite_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/table/table_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/table/table_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/table/writer.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/table/writer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/table_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/table_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/testutil/db.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/testutil/db.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/testutil/iter.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/testutil/iter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/testutil/kv.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/testutil/kv.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/testutil/kvtest.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/testutil/kvtest.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/testutil/storage.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/testutil/storage.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/testutil/util.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/testutil/util.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/testutil_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/testutil_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/util.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/util.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/version.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/version.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leveldb/version_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/leveldb/version_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/manualtest/dbstress/key.go" beforeDir="false" afterPath="$PROJECT_DIR$/manualtest/dbstress/key.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/manualtest/dbstress/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/manualtest/dbstress/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/manualtest/filelock/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/manualtest/filelock/main.go" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/leveldb/db.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="15675">
+              <caret line="844" column="19" selection-start-line="844" selection-start-column="19" selection-end-line="844" selection-end-column="19" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/leveldb/db_test.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="24719">
+              <caret line="1367" selection-start-line="1367" selection-end-line="1367" />
+              <folding>
+                <element signature="e#10435#11150#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/leveldb/table/reader.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="20235">
+              <caret line="1065" selection-start-line="1065" selection-end-line="1065" />
+              <folding>
+                <element signature="e#210#819#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/leveldb/session_compaction.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="456">
+              <caret line="30" column="27" selection-start-line="30" selection-start-column="27" selection-end-line="30" selection-end-column="27" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/leveldb/db_compaction.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="5700">
+              <caret line="308" column="43" selection-start-line="308" selection-start-column="43" selection-end-line="308" selection-end-column="43" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/leveldb/table/writer.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="67">
+              <caret line="233" lean-forward="true" selection-start-line="233" selection-end-line="233" />
+              <folding>
+                <element signature="e#210#698#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>syndtr/goleveldb</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>Terry2415/De-KV</replace>
+    </replaceStrings>
+    <dirStrings>
+      <dir>C:\Users\Terry\go\src\github.com\Terry2415\De-KV</dir>
+    </dirStrings>
+  </component>
+  <component name="GOROOT" path="C:\Go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="false" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/leveldb/options.go" />
+        <option value="$PROJECT_DIR$/leveldb/opt/options.go" />
+        <option value="$PROJECT_DIR$/leveldb/filter.go" />
+        <option value="$PROJECT_DIR$/manualtest/filelock/main.go" />
+        <option value="$PROJECT_DIR$/manualtest/dbstress/main.go" />
+        <option value="$PROJECT_DIR$/manualtest/dbstress/key.go" />
+        <option value="$PROJECT_DIR$/leveldb/testutil/iter.go" />
+        <option value="$PROJECT_DIR$/leveldb/testutil/db.go" />
+        <option value="$PROJECT_DIR$/leveldb/testutil/kvtest.go" />
+        <option value="$PROJECT_DIR$/leveldb/testutil/kv.go" />
+        <option value="$PROJECT_DIR$/leveldb/testutil/util.go" />
+        <option value="$PROJECT_DIR$/leveldb/iterator/array_iter_test.go" />
+        <option value="$PROJECT_DIR$/leveldb/iterator/indexed_iter.go" />
+        <option value="$PROJECT_DIR$/leveldb/iterator/indexed_iter_test.go" />
+        <option value="$PROJECT_DIR$/leveldb/iterator/merged_iter_test.go" />
+        <option value="$PROJECT_DIR$/leveldb/iterator/merged_iter.go" />
+        <option value="$PROJECT_DIR$/leveldb/db_test.go" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="910" />
+    <option name="width" value="455" />
+    <option name="height" value="728" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="De-KV" type="b2602c69:ProjectViewProjectNode" />
+              <item name="De-KV" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="De-KV" type="b2602c69:ProjectViewProjectNode" />
+              <item name="De-KV" type="462c0819:PsiDirectoryNode" />
+              <item name="leveldb" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="De-KV" type="b2602c69:ProjectViewProjectNode" />
+              <item name="De-KV" type="462c0819:PsiDirectoryNode" />
+              <item name="manualtest" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="configurable.Global.GOPATH.is.expanded" value="true" />
+    <property name="configurable.Project.GOPATH.is.expanded" value="true" />
+    <property name="go.gopath.indexing.explicitly.defined" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="com.goide.configuration.GoLibrariesConfigurableProvider" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Go Test.TestDB_ConcurrentIterator in github.com/Terry2415/De-KV/leveldb">
+    <configuration name="TestDB_ConcurrentIterator in github.com/Terry2415/De-KV/leveldb" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="De-KV" />
+      <working_directory value="$PROJECT_DIR$/leveldb" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="github.com/Terry2415/De-KV/leveldb" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestDB_ConcurrentIterator$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestDB_ConcurrentWrite in github.com/Terry2415/De-KV/leveldb" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="De-KV" />
+      <working_directory value="$PROJECT_DIR$/leveldb" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="github.com/Terry2415/De-KV/leveldb" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestDB_ConcurrentWrite$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestDB_GetFromTable in github.com/Terry2415/De-KV/leveldb" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="De-KV" />
+      <working_directory value="$PROJECT_DIR$/leveldb" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="github.com/Terry2415/De-KV/leveldb" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestDB_GetFromTable$" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Test.TestDB_ConcurrentIterator in github.com/Terry2415/De-KV/leveldb" />
+        <item itemvalue="Go Test.TestDB_ConcurrentWrite in github.com/Terry2415/De-KV/leveldb" />
+        <item itemvalue="Go Test.TestDB_GetFromTable in github.com/Terry2415/De-KV/leveldb" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TestHistory">
+    <history-entry file="TestDB_GetFromTable_in_github_com_Terry2415_De-KV_leveldb - 2020.02.12 at 13h 14m 39s.xml">
+      <configuration name="TestDB_GetFromTable in github.com/Terry2415/De-KV/leveldb" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestDB_ConcurrentWrite_in_github_com_Terry2415_De-KV_leveldb - 2020.02.12 at 13h 17m 39s.xml">
+      <configuration name="TestDB_ConcurrentWrite in github.com/Terry2415/De-KV/leveldb" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestDB_GetFromTable_in_github_com_Terry2415_De-KV_leveldb - 2020.02.12 at 13h 27m 27s.xml">
+      <configuration name="TestDB_GetFromTable in github.com/Terry2415/De-KV/leveldb" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestDB_ConcurrentWrite_in_github_com_Terry2415_De-KV_leveldb - 2020.02.12 at 13h 28m 45s.xml">
+      <configuration name="TestDB_ConcurrentWrite in github.com/Terry2415/De-KV/leveldb" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestDB_ConcurrentWrite_in_github_com_Terry2415_De-KV_leveldb - 2020.02.12 at 13h 32m 27s.xml">
+      <configuration name="TestDB_ConcurrentWrite in github.com/Terry2415/De-KV/leveldb" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestDB_ConcurrentIterator_in_github_com_Terry2415_De-KV_leveldb - 2020.02.12 at 13h 34m 41s.xml">
+      <configuration name="TestDB_ConcurrentIterator in github.com/Terry2415/De-KV/leveldb" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Favorites" order="0" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.2118003" />
+      <window_info id="Structure" order="2" weight="0.24205749" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3295082" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3295082" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="8" />
+      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info anchor="bottom" id="Terminal" order="10" />
+      <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Database" order="3" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/leveldb/table/reader.go</url>
+          <line>1016</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/leveldb/table.go</url>
+          <line>420</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/leveldb/session_compaction.go</url>
+          <line>33</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/leveldb/db_compaction.go</url>
+          <line>304</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/leveldb/db_compaction.go</url>
+          <line>322</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/leveldb/table/reader.go</url>
+          <line>1024</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/leveldb/table/reader.go</url>
+          <line>1038</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/../../syndtr/goleveldb/leveldb/opt/options.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="194">
+          <caret line="140" column="5" selection-start-line="140" selection-start-column="5" selection-end-line="140" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/filter.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="9" column="31" selection-start-line="9" selection-start-column="31" selection-end-line="9" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/options.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="570">
+          <caret line="30" column="35" selection-start-line="30" selection-start-column="35" selection-end-line="30" selection-end-column="35" />
+          <folding>
+            <element signature="e#212#314#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/testutil/iter.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="128">
+          <caret line="12" column="30" lean-forward="true" selection-start-line="12" selection-start-column="30" selection-end-line="12" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/iterator/merged_iter_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="14" column="32" selection-start-line="14" selection-start-column="32" selection-end-line="14" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/iterator/array_iter_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="10" selection-start-line="10" selection-end-line="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/iterator/merged_iter.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="13" selection-start-line="13" selection-end-line="13" />
+          <folding>
+            <element signature="e#213#361#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/iterator/indexed_iter.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+          <folding>
+            <element signature="e#213#313#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/testutil/util.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-110">
+          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/testutil/kv.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="137">
+          <caret line="11" column="10" selection-start-line="11" selection-start-column="10" selection-end-line="11" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/testutil/kvtest.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="137">
+          <caret line="12" column="30" selection-start-line="12" selection-start-column="30" selection-end-line="12" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/doc.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-342" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/testutil/db.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="29" column="5" selection-start-line="29" selection-start-column="5" selection-end-line="29" selection-end-column="5" />
+          <folding>
+            <element signature="e#213#411#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/opt/options.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="175">
+          <caret line="633" lean-forward="true" selection-start-line="633" selection-end-line="633" />
+          <folding>
+            <element signature="e#265#498#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/db_transaction.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="127">
+          <caret line="96" column="32" selection-start-line="96" selection-start-column="32" selection-end-line="96" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/cache/cache_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#210#296#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/cache/bench_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
+          <folding>
+            <element signature="e#210#252#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/comparer/comparer.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/errors/errors.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-114">
+          <folding>
+            <element signature="e#282#399#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/filter/bloom.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#211#264#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/filter/filter.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="438">
+          <caret line="29" column="5" selection-start-line="29" selection-start-column="5" selection-end-line="29" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/iterator/indexed_iter_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="15" column="32" selection-start-line="15" selection-start-column="32" selection-end-line="15" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/key_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1425">
+          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+          <folding>
+            <element signature="e#212#290#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/manualtest/dbstress/key.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="8" column="1" lean-forward="true" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
+          <folding>
+            <element signature="e#14#142#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/manualtest/dbstress/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="17" column="10" lean-forward="true" selection-start-line="17" selection-start-column="10" selection-end-line="17" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/manualtest/filelock/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="11" column="48" lean-forward="true" selection-start-line="11" selection-start-column="48" selection-end-line="11" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/version.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="454" lean-forward="true" selection-start-line="454" selection-end-line="454" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/table.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-123">
+          <caret line="423" selection-start-line="423" selection-end-line="423" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/session.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="65" lean-forward="true" selection-start-line="65" selection-end-line="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/db.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15675">
+          <caret line="844" column="19" selection-start-line="844" selection-start-column="19" selection-end-line="844" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/db_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="24719">
+          <caret line="1367" selection-start-line="1367" selection-end-line="1367" />
+          <folding>
+            <element signature="e#10435#11150#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/table/reader.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="20235">
+          <caret line="1065" selection-start-line="1065" selection-end-line="1065" />
+          <folding>
+            <element signature="e#210#819#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/session_compaction.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="456">
+          <caret line="30" column="27" selection-start-line="30" selection-start-column="27" selection-end-line="30" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/db_compaction.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5700">
+          <caret line="308" column="43" selection-start-line="308" selection-start-column="43" selection-end-line="308" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go.mod">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="6" column="1" lean-forward="true" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/leveldb/table/writer.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="67">
+          <caret line="233" lean-forward="true" selection-start-line="233" selection-end-line="233" />
+          <folding>
+            <element signature="e#210#698#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
