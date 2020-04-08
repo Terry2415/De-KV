@@ -11,9 +11,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/syndtr/goleveldb/leveldb/errors"
-	"github.com/syndtr/goleveldb/leveldb/opt"
-	"github.com/syndtr/goleveldb/leveldb/storage"
+	"github.com/Terry2415/De-KV/leveldb/errors"
+	"github.com/Terry2415/De-KV/leveldb/opt"
+	"github.com/Terry2415/De-KV/leveldb/storage"
 )
 
 var (
@@ -550,6 +550,7 @@ func (db *DB) tableCompaction(c *compaction, noTrivial bool) {
 		t := c.levels[0][0]
 		db.logf("table@move L%d@%d -> L%d", c.sourceLevel, t.fd.Num, c.sourceLevel+1)
 		rec.delTable(c.sourceLevel, t.fd.Num)
+		rec.delfiledag(c.sourceLevel, t.index_cid)
 		rec.addTableFile(c.sourceLevel+1, t)
 		db.compactionCommit("table-move", rec)
 		return
@@ -561,6 +562,7 @@ func (db *DB) tableCompaction(c *compaction, noTrivial bool) {
 			stats[i].read += t.size
 			// Insert deleted tables into record
 			rec.delTable(c.sourceLevel+i, t.fd.Num)
+			rec.delfiledag(c.sourceLevel+i,t.index_cid)
 		}
 	}
 	sourceSize := int(stats[0].read + stats[1].read)

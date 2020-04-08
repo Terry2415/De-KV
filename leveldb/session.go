@@ -7,16 +7,25 @@
 package leveldb
 
 import (
+	"flag"
 	"fmt"
+	"github.com/Terry2415/De-KV/leveldb/util"
 	"io"
 	"os"
 	"sync"
 
-	"github.com/syndtr/goleveldb/leveldb/errors"
-	"github.com/syndtr/goleveldb/leveldb/journal"
-	"github.com/syndtr/goleveldb/leveldb/opt"
-	"github.com/syndtr/goleveldb/leveldb/storage"
+	"github.com/Terry2415/De-KV/leveldb/errors"
+	"github.com/Terry2415/De-KV/leveldb/journal"
+	"github.com/Terry2415/De-KV/leveldb/opt"
+	"github.com/Terry2415/De-KV/leveldb/storage"
+	"github.com/ipfs/go-ipfs-api"
+	logging "gx/ipfs/QmbkT7eMTyXfpeyB3ZMxxcxg7XH8t6uXp49jqzz4HB7BGF/go-log"
+	dag "gx/ipfs/QmPJNbVw8o3ohC43ppSXyNXwYKsWShG4zygnirHptfbHri/go-merkledag"
 )
+
+var repoPath = flag.String("repo", os.Getenv("IPFS_PATH"), "IPFS_PATH to use")
+var log_ipfs = logging.Logger("cmd/ipfs")
+const  shellUrl = "localhost:5001"
 
 // ErrManifestCorrupted records manifest corruption. This error will be
 // wrapped with errors.ErrCorrupted.
@@ -49,11 +58,14 @@ type session struct {
 	tops     *tOps
 
 	manifest       *journal.Writer
+	version_hash  string
+	version_hash_old  string
 	manifestWriter storage.Writer
 	manifestFd     storage.FileDesc
 
 	stCompPtrs  []internalKey // compaction pointers; need external synchronization
 	stVersion   *version      // current version
+	stVersion_old   *version      // current version
 	ntVersionId int64         // next version id to assign
 	refCh       chan *vTask
 	relCh       chan *vTask
@@ -93,6 +105,7 @@ func newSession(stor storage.Storage, o *opt.Options) (s *session, err error) {
 	go s.refLoop()
 	s.setVersion(nil, newVersion(s))
 	s.log("log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed")
+	s.o.Options.Shell = shell.NewShell(shellUrl)
 	return
 }
 
@@ -124,6 +137,45 @@ func (s *session) create() error {
 	// create manifest
 	return s.newManifest(nil, nil)
 }
+
+func (s *session) recover_versionblock() (err error) {
+	//访问智能合约，获取一个版本的hash，如果合约一个版本都没有，那么字符串长度为0
+	s.version_hash ="Qmd4AjhBaBs9skkhdrNDZ3DEpCsDAcSoAEVPrs5U5Sd1Ui"
+	if len(s.version_hash) == 0 {
+		return
+	}
+
+	var (
+		shell = s.o.Shell
+		rec = &sessionRecord{}
+		staging = s.stVersion.newStaging()
+	)
+
+	version_block, err := shell.BlockGet_proto(s.version_hash)
+	if err != nil {
+		return
+	}
+	r := util.NewBuffer(version_block.(*dag.ProtoNode).Data())
+
+	err = rec.decode(r)
+	if err != nil {
+		return
+	}
+
+	// save compact pointers
+	for _, r := range rec.compPtrs {
+		s.setCompPtr(r.level, internalKey(r.ikey))
+	}
+	// commit record to version staging
+	staging.commit(rec)
+
+	s.setVersion(rec, staging.finish_dag(false))
+	s.setNextFileNum(rec.nextFileNum)
+	s.recordCommited(rec)
+
+	return nil
+}
+
 
 // Recover a database session; need external synchronization.
 func (s *session) recover() (err error) {
@@ -185,6 +237,8 @@ func (s *session) recover() (err error) {
 		rec.resetCompPtrs()
 		rec.resetAddedTables()
 		rec.resetDeletedTables()
+		rec.resetAddeddags()
+		rec.resetDeleteddags()
 	}
 
 	switch {
@@ -201,7 +255,7 @@ func (s *session) recover() (err error) {
 	}
 
 	s.manifestFd = fd
-	s.setVersion(rec, staging.finish(false))
+	s.setVersion(rec, staging.finish_dag(false))
 	s.setNextFileNum(rec.nextFileNum)
 	s.recordCommited(rec)
 	return nil
@@ -230,6 +284,11 @@ func (s *session) commit(r *sessionRecord, trivial bool) (err error) {
 		err = s.flushManifest(r)
 	}
 
+	version_block := s.new_versionblock(nv)
+
+	s.o.Shell.BlockPut_proto(version_block)
+	s.version_hash = version_block.Cid().String()
+	s.logf("version@new version block %v", s.version_hash)
 	// finally, apply new version if no error rise
 	if err == nil {
 		s.setVersion(r, nv)

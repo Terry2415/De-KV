@@ -12,9 +12,10 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/syndtr/goleveldb/leveldb/iterator"
-	"github.com/syndtr/goleveldb/leveldb/opt"
-	"github.com/syndtr/goleveldb/leveldb/util"
+	"github.com/Terry2415/De-KV/leveldb/iterator"
+	"github.com/Terry2415/De-KV/leveldb/opt"
+	"github.com/Terry2415/De-KV/leveldb/util"
+	cid "gx/ipfs/QmTbxNB1NwDesLmKTscr4udL2tVP7MaxvXnD1D9yX7g3PN/go-cid"
 )
 
 type tSet struct {
@@ -177,7 +178,7 @@ func (v *version) get(aux tFiles, ikey internalKey, ro *opt.ReadOptions, noValue
 		if noValue {
 			fikey, ferr = v.s.tops.findKey(t, ikey, ro)
 		} else {
-			fikey, fval, ferr = v.s.tops.find(t, ikey, ro)
+			fikey, fval, ferr = v.s.tops.find_subdag(t, ikey, ro)
 		}
 
 		switch ferr {
@@ -280,7 +281,8 @@ func (v *version) newStaging() *versionStaging {
 func (v *version) spawn(r *sessionRecord, trivial bool) *version {
 	staging := v.newStaging()
 	staging.commit(r)
-	return staging.finish(trivial)
+	return  staging.finish_dag(trivial)
+	//return staging.finish(trivial)
 }
 
 func (v *version) fillRecord(r *sessionRecord) {
@@ -405,7 +407,9 @@ func (v *version) needCompaction() bool {
 
 type tablesScratch struct {
 	added   map[int64]atRecord
+	added_dag map[cid.Cid] filedag
 	deleted map[int64]struct{}
+	deleted_dag map[cid.Cid] dtfiledag
 }
 
 type versionStaging struct {
@@ -448,6 +452,126 @@ func (p *versionStaging) commit(r *sessionRecord) {
 			delete(scratch.deleted, r.num)
 		}
 	}
+
+	for _, r := range r.deletedfiledags {
+		scratch := p.getScratch(r.level)
+		if r.level < len(p.base.levels) && len(p.base.levels[r.level]) > 0 {
+			if scratch.deleted_dag == nil {
+				scratch.deleted_dag = make(map[cid.Cid]dtfiledag)
+			}
+			scratch.deleted_dag[r.index_cid] = r
+		}
+		if scratch.added_dag != nil {
+			delete(scratch.added_dag, r.index_cid)
+		}
+	}
+
+	for _, r := range r.addedfiledags {
+		scratch := p.getScratch(r.level)
+		if scratch.added_dag == nil {
+			scratch.added_dag = make(map[cid.Cid]filedag)
+		}
+		scratch.added_dag[r.index_cid] = r
+		if scratch.deleted_dag != nil {
+			delete(scratch.deleted_dag, r.index_cid)
+		}
+	}
+}
+
+func (p *versionStaging) finish_dag(trivial bool) *version {
+	nv := newVersion(p.base.s)
+	numLevel := len(p.levels)
+	if len(p.base.levels) > numLevel {
+		numLevel = len(p.base.levels)
+	}
+	nv.levels = make([]tFiles, numLevel)
+
+	for level := 0; level < numLevel; level++ {
+		var baseTabels tFiles
+		if level < len(p.base.levels) {
+			baseTabels = p.base.levels[level]
+		}
+
+		if level < len(p.levels) {
+			scratch := p.levels[level]
+
+			if len(scratch.added_dag) == 0 && len(scratch.deleted_dag) == 0 {
+				nv.levels[level] = baseTabels
+				continue
+			}
+
+			var nt tFiles
+			// Prealloc list if possible.
+			if n := len(baseTabels) + len(scratch.added_dag) - len(scratch.deleted_dag); n > 0 {
+				nt = make(tFiles, 0, n)
+			}
+
+			// Base tables.
+			for _, t := range baseTabels {
+				if _, ok := scratch.deleted_dag[t.index_cid]; ok {
+					continue
+				}
+				if _, ok := scratch.added_dag[t.index_cid]; ok {
+					continue
+				}
+				nt = append(nt, t)
+			}
+
+			// Avoid resort if only files in this level are deleted
+			if len(scratch.added_dag) == 0 {
+				nv.levels[level] = nt
+				continue
+			}
+			if trivial && len(scratch.added_dag) > 0 {
+				added := make(tFiles, 0, len(scratch.added_dag))
+				for _, r := range scratch.added_dag {
+					added = append(added, tableFileFromRecord_dag(r))
+				}
+				if level == 0 {
+					added.sortByNum()
+					index := nt.searchNumLess(added[len(added)-1].fd.Num)
+					nt = append(nt[:index], append(added, nt[index:]...)...)
+				} else {
+					added.sortByKey(p.base.s.icmp)
+					_, amax := added.getRange(p.base.s.icmp)
+					index := nt.searchMin(p.base.s.icmp, amax)
+					nt = append(nt[:index], append(added, nt[index:]...)...)
+				}
+				nv.levels[level] = nt
+				continue
+			}
+
+			// New tables.
+			for _, r := range scratch.added_dag {
+				nt = append(nt, tableFileFromRecord_dag(r))
+			}
+
+			if len(nt) != 0 {
+				// Sort tables.
+				if level == 0 {
+					nt.sortByNum()
+				} else {
+					nt.sortByKey(p.base.s.icmp)
+				}
+
+				nv.levels[level] = nt
+			}
+		}else {
+			nv.levels[level] = baseTabels
+		}
+	}
+
+
+	// Trim levels.
+	n := len(nv.levels)
+	for ; n > 0 && nv.levels[n-1] == nil; n-- {
+	}
+	nv.levels = nv.levels[:n]
+
+	// Compute compaction score for new version.
+	nv.computeCompaction()
+
+	return nv
 }
 
 func (p *versionStaging) finish(trivial bool) *version {

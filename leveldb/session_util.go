@@ -11,8 +11,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/syndtr/goleveldb/leveldb/journal"
-	"github.com/syndtr/goleveldb/leveldb/storage"
+	"github.com/Terry2415/De-KV/leveldb/journal"
+	"github.com/Terry2415/De-KV/leveldb/storage"
+	dag "gx/ipfs/QmPJNbVw8o3ohC43ppSXyNXwYKsWShG4zygnirHptfbHri/go-merkledag"
+	"github.com/Terry2415/De-KV/leveldb/util"
 )
 
 // Logging.
@@ -398,6 +400,23 @@ func (s *session) recordCommited(rec *sessionRecord) {
 	for _, r := range rec.compPtrs {
 		s.setCompPtr(r.level, internalKey(r.ikey))
 	}
+}
+
+//Create a new manifest block
+func (s *session) new_versionblock(v *version) (version_block *dag.ProtoNode){
+	rec := &sessionRecord{}
+	w := &util.Buffer{}
+
+	s.fillRecord(rec, true)
+	v.fillRecord(rec)
+
+	err := rec.encode(w)
+	if err != nil {
+		return
+	}
+
+	version_block = dag.NodeWithData(w.Bytes())
+	return version_block
 }
 
 // Create a new manifest file; need external synchronization.

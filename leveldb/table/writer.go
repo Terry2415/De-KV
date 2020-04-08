@@ -14,10 +14,13 @@ import (
 
 	"github.com/golang/snappy"
 
-	"github.com/syndtr/goleveldb/leveldb/comparer"
-	"github.com/syndtr/goleveldb/leveldb/filter"
-	"github.com/syndtr/goleveldb/leveldb/opt"
-	"github.com/syndtr/goleveldb/leveldb/util"
+	"github.com/Terry2415/De-KV/leveldb/comparer"
+	"github.com/Terry2415/De-KV/leveldb/filter"
+	"github.com/Terry2415/De-KV/leveldb/opt"
+	"github.com/Terry2415/De-KV/leveldb/util"
+	"github.com/ipfs/go-ipfs-api"
+	dag "gx/ipfs/QmPJNbVw8o3ohC43ppSXyNXwYKsWShG4zygnirHptfbHri/go-merkledag"
+	"gx/ipfs/QmTbxNB1NwDesLmKTscr4udL2tVP7MaxvXnD1D9yX7g3PN/go-cid"
 )
 
 func sharedPrefixLen(a, b []byte) int {
@@ -138,6 +141,7 @@ func (w *filterWriter) generate() {
 // Writer is a table writer.
 type Writer struct {
 	writer io.Writer
+	s		*shell.Shell
 	err    error
 	// Options
 	cmp         comparer.Comparer
@@ -149,6 +153,11 @@ type Writer struct {
 	indexBlock  blockWriter
 	filterBlock filterWriter
 	pendingBH   blockHandle
+
+	index_buf        util.Buffer
+	pending_datanode *dag.ProtoNode
+	indexnode *dag.ProtoNode
+
 	offset      uint64
 	nEntries    int
 	// Scratch allocated enough for 5 uvarint. Block writer should not use
@@ -157,6 +166,8 @@ type Writer struct {
 	scratch            [50]byte
 	comparerScratch    []byte
 	compressionScratch []byte
+
+	cidBuilder cid.Builder
 }
 
 func (w *Writer) writeBlock(buf *util.Buffer, compression opt.Compression) (bh blockHandle, err error) {
@@ -196,6 +207,12 @@ func (w *Writer) flushPendingBH(key []byte) {
 	if w.pendingBH.length == 0 {
 		return
 	}
+
+	size, err := w.pending_datanode.Size()
+	if err != nil || size == 0{
+		return
+	}
+
 	var separator []byte
 	if len(key) == 0 {
 		separator = w.cmp.Successor(w.comparerScratch[:0], w.dataBlock.prevKey)
@@ -210,14 +227,31 @@ func (w *Writer) flushPendingBH(key []byte) {
 	n := encodeBlockHandle(w.scratch[:20], w.pendingBH)
 	// Append the block handle to the index block.
 	w.indexBlock.append(separator, w.scratch[:n])
-	// Reset prev key of the data block.
 	w.dataBlock.prevKey = w.dataBlock.prevKey[:0]
 	// Clear pending block handle.
 	w.pendingBH = blockHandle{}
+
+	n = len(separator)
+	buf4 := w.index_buf.Alloc(4)
+	binary.LittleEndian.PutUint32(buf4, uint32(n))
+	w.index_buf.Write(separator)
+	buf4 = w.index_buf.Alloc(4)
+	binary.LittleEndian.PutUint32(buf4, uint32(n))
+
+	w.indexnode.AddNodeLink("", w.pending_datanode)
+	_,err = w.s.BlockPut_proto(w.pending_datanode)
+	if err !=nil{
+		fmt.Sprint(err)
+		return
+	}
+	w.pending_datanode = &dag.ProtoNode{}
 }
 
 func (w *Writer) finishBlock() error {
 	w.dataBlock.finish()
+
+	w.pending_datanode = dag.NodeWithData(w.dataBlock.buf.Bytes())
+
 	bh, err := w.writeBlock(&w.dataBlock.buf, w.compression)
 	if err != nil {
 		return err
@@ -280,6 +314,10 @@ func (w *Writer) BytesLen() int {
 	return int(w.offset)
 }
 
+func (w *Writer) Get_indexcid() cid.Cid {
+	return w.indexnode.Cid()
+}
+
 // Close will finalize the table. Calling Append is not possible
 // after Close, but calling BlocksLen, EntriesLen and BytesLen
 // is still possible.
@@ -328,6 +366,14 @@ func (w *Writer) Close() error {
 		w.err = err
 		return w.err
 	}
+	// Write the indexnode
+	w.indexnode.SetData(w.index_buf.Bytes())
+	w.index_buf.Reset()
+	_,ers := w.s.BlockPut_proto(w.indexnode)
+	if ers !=nil{
+		fmt.Sprint(ers)
+		return ers
+	}
 
 	// Write the table footer.
 	footer := w.scratch[:footerLen]
@@ -358,6 +404,9 @@ func NewWriter(f io.Writer, o *opt.Options) *Writer {
 		compression:     o.GetCompression(),
 		blockSize:       o.GetBlockSize(),
 		comparerScratch: make([]byte, 0),
+		indexnode:		 dag.NodeWithData(nil),
+		pending_datanode:dag.NodeWithData(nil),
+		s:				 o.Shell,
 	}
 	// data block
 	w.dataBlock.restartInterval = o.GetBlockRestartInterval()

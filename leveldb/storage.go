@@ -1,7 +1,7 @@
 package leveldb
 
 import (
-	"github.com/syndtr/goleveldb/leveldb/storage"
+	"github.com/Terry2415/De-KV/leveldb/storage"
 	"sync/atomic"
 )
 

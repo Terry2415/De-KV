@@ -12,9 +12,9 @@ import (
 
 	. "github.com/onsi/gomega"
 
-	"github.com/syndtr/goleveldb/leveldb/errors"
-	"github.com/syndtr/goleveldb/leveldb/iterator"
-	"github.com/syndtr/goleveldb/leveldb/util"
+	"github.com/Terry2415/De-KV/leveldb/errors"
+	"github.com/Terry2415/De-KV/leveldb/iterator"
+	"github.com/Terry2415/De-KV/leveldb/util"
 )
 
 type DB interface{}

@@ -12,7 +12,9 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	"github.com/syndtr/goleveldb/leveldb/util"
+	"github.com/Terry2415/De-KV/leveldb/util"
+	cid "gx/ipfs/QmTbxNB1NwDesLmKTscr4udL2tVP7MaxvXnD1D9yX7g3PN/go-cid"
+	murmur3 "github.com/spaolacci/murmur3"
 )
 
 // Cacher provides interface to implements a caching functionality.
@@ -58,6 +60,10 @@ func (g *NamespaceGetter) Get(key uint64, setFunc func() (size int, value Value)
 	return g.Cache.Get(g.NS, key, setFunc)
 }
 
+func (g *NamespaceGetter) Get_dag(index_cid cid.Cid, setFunc func() (size int, value Value)) *Handle {
+	return g.Cache.Get_dag(g.NS, index_cid, setFunc)
+}
+
 // The hash tables implementation is based on:
 // "Dynamic-Sized Nonblocking Hash Tables", by Yujie Liu,
 // Kunlong Zhang, and Michael Spear.
@@ -82,6 +88,68 @@ func (b *mBucket) freeze() []*Node {
 		b.frozen = true
 	}
 	return b.node
+}
+
+func (b *mBucket) get_dag(r *Cache, h *mNode, hash uint32, ns uint64, index_cid cid.Cid, noset bool) (done, added bool, n *Node) {
+	b.mu.Lock()
+
+	if b.frozen {
+		b.mu.Unlock()
+		return
+	}
+
+	// Scan the node.
+	for _, n := range b.node {
+		if n.hash == hash && n.ns == ns && n.index_cid == index_cid {
+			atomic.AddInt32(&n.ref, 1)
+			b.mu.Unlock()
+			return true, false, n
+		}
+	}
+
+	// Get only.
+	if noset {
+		b.mu.Unlock()
+		return true, false, nil
+	}
+
+	// Create node.
+	n = &Node{
+		r:    r,
+		hash: hash,
+		ns:   ns,
+		index_cid:  index_cid,
+		ref:  1,
+	}
+	// Add node to bucket.
+	b.node = append(b.node, n)
+	bLen := len(b.node)
+	b.mu.Unlock()
+
+	// Update counter.
+	grow := atomic.AddInt32(&r.nodes, 1) >= h.growThreshold
+	if bLen > mOverflowThreshold {
+		grow = grow || atomic.AddInt32(&h.overflow, 1) >= mOverflowGrowThreshold
+	}
+
+	// Grow.
+	if grow && atomic.CompareAndSwapInt32(&h.resizeInProgess, 0, 1) {
+		nhLen := len(h.buckets) << 1
+		nh := &mNode{
+			buckets:         make([]unsafe.Pointer, nhLen),
+			mask:            uint32(nhLen) - 1,
+			pred:            unsafe.Pointer(h),
+			growThreshold:   int32(nhLen * mOverflowThreshold),
+			shrinkThreshold: int32(nhLen >> 1),
+		}
+		ok := atomic.CompareAndSwapPointer(&r.mHead, unsafe.Pointer(h), unsafe.Pointer(nh))
+		if !ok {
+			panic("BUG: failed swapping head")
+		}
+		go nh.initBuckets()
+	}
+
+	return true, true, n
 }
 
 func (b *mBucket) get(r *Cache, h *mNode, hash uint32, ns, key uint64, noset bool) (done, added bool, n *Node) {
@@ -358,6 +426,51 @@ func (r *Cache) SetCapacity(capacity int) {
 	}
 }
 
+func (r *Cache) Get_dag(ns uint64, index_cid cid.Cid, setFunc func() (size int, value Value)) *Handle {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	if r.closed {
+		return nil
+	}
+
+	key:=murmur3.Sum64(index_cid.Bytes())
+	hash := murmur32(ns, key, 0xf00)
+
+	for {
+		h, b := r.getBucket(hash)
+		done, _, n := b.get_dag(r, h, hash, ns, index_cid, setFunc == nil)
+		if done {
+			if n != nil {
+				n.mu.Lock()
+				if n.value == nil {
+					if setFunc == nil {
+						n.mu.Unlock()
+						n.unref()
+						return nil
+					}
+
+					n.size, n.value = setFunc()
+					if n.value == nil {
+						n.size = 0
+						n.mu.Unlock()
+						n.unref()
+						return nil
+					}
+					atomic.AddInt32(&r.size, int32(n.size))
+				}
+				n.mu.Unlock()
+				if r.cacher != nil {
+					r.cacher.Promote(n)
+				}
+				return &Handle{unsafe.Pointer(n)}
+			}
+
+			break
+		}
+	}
+	return nil
+}
+
 // Get gets 'cache node' with the given namespace and key.
 // If cache node is not found and setFunc is not nil, Get will atomically creates
 // the 'cache node' by calling setFunc. Otherwise Get will returns nil.
@@ -574,6 +687,7 @@ type Node struct {
 
 	hash    uint32
 	ns, key uint64
+	index_cid cid.Cid
 
 	mu    sync.Mutex
 	size  int

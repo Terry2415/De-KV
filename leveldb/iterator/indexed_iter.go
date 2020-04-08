@@ -7,8 +7,8 @@
 package iterator
 
 import (
-	"github.com/syndtr/goleveldb/leveldb/errors"
-	"github.com/syndtr/goleveldb/leveldb/util"
+	"github.com/Terry2415/De-KV/leveldb/errors"
+	"github.com/Terry2415/De-KV/leveldb/util"
 )
 
 // IteratorIndexer is the interface that wraps CommonIterator and basic Get

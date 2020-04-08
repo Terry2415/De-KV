@@ -16,14 +16,16 @@ import (
 
 	"github.com/golang/snappy"
 
-	"github.com/syndtr/goleveldb/leveldb/cache"
-	"github.com/syndtr/goleveldb/leveldb/comparer"
-	"github.com/syndtr/goleveldb/leveldb/errors"
-	"github.com/syndtr/goleveldb/leveldb/filter"
-	"github.com/syndtr/goleveldb/leveldb/iterator"
-	"github.com/syndtr/goleveldb/leveldb/opt"
-	"github.com/syndtr/goleveldb/leveldb/storage"
-	"github.com/syndtr/goleveldb/leveldb/util"
+	"github.com/Terry2415/De-KV/leveldb/cache"
+	"github.com/Terry2415/De-KV/leveldb/comparer"
+	"github.com/Terry2415/De-KV/leveldb/errors"
+	"github.com/Terry2415/De-KV/leveldb/filter"
+	"github.com/Terry2415/De-KV/leveldb/iterator"
+	"github.com/Terry2415/De-KV/leveldb/opt"
+	"github.com/Terry2415/De-KV/leveldb/storage"
+	"github.com/Terry2415/De-KV/leveldb/util"
+	dag "gx/ipfs/QmPJNbVw8o3ohC43ppSXyNXwYKsWShG4zygnirHptfbHri/go-merkledag"
+	"gx/ipfs/QmTbxNB1NwDesLmKTscr4udL2tVP7MaxvXnD1D9yX7g3PN/go-cid"
 )
 
 // Reader errors.
@@ -149,6 +151,87 @@ type blockIter struct {
 	offsetLimit     int
 	// Error.
 	err error
+}
+
+type indexnodeIter struct {
+	tr          	*Reader
+	data    		[]byte
+	size 			int
+	forward_i		int
+
+	first	 		[]byte
+	last     		[]byte
+	cur_key_num 	int   //当前的key是第几个entry,，定位第几个link
+	cur_key 		[]byte
+}
+
+func (i *indexnodeIter) seek(key []byte) bool{
+	for i.Next() {
+		if i.tr.cmp.Compare(i.cur_key, key) >= 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func (i *indexnodeIter) Next() bool {
+	new_cur_key, err:= i.forward_entry(i.forward_i)
+	if err != nil{
+		return false
+	}
+
+	i.cur_key = new_cur_key
+	i.cur_key_num++
+
+	new_forward_i := i.forward_i+len(i.cur_key)+8
+	i.forward_i = new_forward_i
+	return true
+}
+
+func (i *indexnodeIter) forward_entry(offset int) (key []byte, err error) {
+	if offset<0 || offset >= i.size{
+		return  nil, ErrNotFound
+	}
+	key_len := int(binary.LittleEndian.Uint32(i.data[offset:]))
+	key_start := offset + 4
+	key_end := key_start + key_len
+	key = i.data[key_start:key_end]
+	return key,nil
+}
+
+func (i *indexnodeIter) back_entry(offset int) (key []byte, err error) {
+	if offset<0 || offset > i.size{
+		return  nil, ErrNotFound
+	}
+	key_len := int(binary.LittleEndian.Uint32(i.data[offset-4:offset]))
+	key_end := offset-4
+	key_start := key_end- key_len
+	key = i.data[key_start:key_end]
+	return key, nil
+}
+
+func (r *Reader) newindexIter(indexnode *dag.ProtoNode) *indexnodeIter {
+	data := indexnode.Data()
+	size := len(data)
+	ii := &indexnodeIter{
+		tr:		r,
+		data: 	data,
+		size:	size,
+		forward_i:	0,
+		cur_key_num:	0,
+	}
+
+	first, err := ii.forward_entry(0)
+	if err == nil{
+		ii.first = first
+	}
+
+	last, err := ii.back_entry(size)
+	if err == nil{
+		ii.last = last
+	}
+
+	return ii
 }
 
 func (i *blockIter) sErr(err error) {
@@ -508,6 +591,7 @@ func (i *indexIter) Get() iterator.Iterator {
 }
 
 // Reader is a table reader.
+// or a file-subdag reader
 type Reader struct {
 	mu     sync.RWMutex
 	fd     storage.FileDesc
@@ -524,6 +608,8 @@ type Reader struct {
 	dataEnd                   int64
 	metaBH, indexBH, filterBH blockHandle
 	indexBlock                *block
+	index_cid				  cid.Cid
+	indexnode 				  *dag.ProtoNode
 	filterBlock               *filterBlock
 }
 
@@ -613,6 +699,54 @@ func (r *Reader) readBlock(bh blockHandle, verifyChecksum bool) (*block, error) 
 		restartsOffset: len(data) - (restartsLen+1)*4,
 	}
 	return b, nil
+}
+
+func (r *Reader) BlockfromNode(node *dag.ProtoNode) (b *block) {
+	data := node.Data()
+	restartsLen := int(binary.LittleEndian.Uint32(data[len(data)-4:]))
+	b = &block{
+		bpool:          r.bpool,
+		bh:             blockHandle{},
+		data:           data,
+		restartsLen:    restartsLen,
+		restartsOffset: len(data) - (restartsLen+1)*4,
+	}
+	return b
+}
+
+func (r *Reader) readBlockCached_dag(cid cid.Cid, fillCache bool) (*dag.ProtoNode, util.Releaser, error) {
+	if r.cache != nil {
+		var (
+			err error
+			ch  *cache.Handle
+		)
+
+		if fillCache {
+			ch = r.cache.Get_dag(cid, func() (size int, value cache.Value) {
+				node, err := r.o.Shell.BlockGet_proto(cid.String())
+				if err != nil {
+					return 0, nil
+				}
+				return cap(node.RawData()), node
+			})
+		} else {
+			ch = r.cache.Get_dag(cid, nil)
+		}
+
+		if ch != nil {
+			b, ok := ch.Value().(*dag.ProtoNode)
+			if !ok {
+				ch.Release()
+				return nil, nil, errors.New("leveldb/table: inconsistent block type")
+			}
+			return b, ch, err
+		} else if err != nil {
+			return nil, nil, err
+		}
+	}
+
+	node, err := r.o.Shell.BlockGet_proto(cid.String())
+	return node.(*dag.ProtoNode), nil, err
 }
 
 func (r *Reader) readBlockCached(bh blockHandle, verifyChecksum, fillCache bool) (*block, util.Releaser, error) {
@@ -707,6 +841,13 @@ func (r *Reader) readFilterBlockCached(bh blockHandle, fillCache bool) (*filterB
 	return b, b, err
 }
 
+func (r *Reader) getIndexBlock_dag(fillCache bool) (b *dag.ProtoNode, rel util.Releaser, err error) {
+	if r.indexnode == nil {
+		return r.readBlockCached_dag(r.index_cid, fillCache)
+	}
+	return r.indexnode, util.NoopReleaser{}, nil
+}
+
 func (r *Reader) getIndexBlock(fillCache bool) (b *block, rel util.Releaser, err error) {
 	if r.indexBlock == nil {
 		return r.readBlockCached(r.indexBH, true, fillCache)
@@ -759,6 +900,15 @@ func (r *Reader) newBlockIter(b *block, bReleaser util.Releaser, slice *util.Ran
 		}
 	}
 	return bi
+}
+
+func (r *Reader) getDataIter_dag(cid cid.Cid, slice *util.Range, verifyChecksum, fillCache bool) iterator.Iterator {
+	datanode,rel,err := r.readBlockCached_dag(cid,true)
+	if err != nil {
+		return iterator.NewEmptyIterator(err)
+	}
+	b := r.BlockfromNode(datanode)
+	return r.newBlockIter(b, rel, slice, false)
 }
 
 func (r *Reader) getDataIter(dataBH blockHandle, slice *util.Range, verifyChecksum, fillCache bool) iterator.Iterator {
@@ -884,6 +1034,71 @@ func (r *Reader) find(key []byte, filtered bool, ro *opt.ReadOptions, noValue bo
 		}
 
 		data = r.getDataIter(dataBH, nil, r.verifyChecksum, !ro.GetDontFillCache())
+		if !data.Next() {
+			data.Release()
+			if err = data.Error(); err == nil {
+				err = ErrNotFound
+			}
+			return
+		}
+	}
+
+	// Key doesn't use block buffer, no need to copy the buffer.
+	rkey = data.Key()
+	if !noValue {
+		if r.bpool == nil {
+			value = data.Value()
+		} else {
+			// Value does use block buffer, and since the buffer will be
+			// recycled, it need to be copied.
+			value = append([]byte{}, data.Value()...)
+		}
+	}
+	data.Release()
+	return
+}
+
+func (r *Reader) Find_subdag(key []byte, filtered bool, ro *opt.ReadOptions, noValue bool) (rkey, value []byte, err error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	if r.err != nil {
+		err = r.err
+		return
+	}
+
+	indexnode, rel, err := r.getIndexBlock_dag(true)
+	if err != nil {
+		return
+	}
+	defer rel.Release()
+
+	index:= r.newindexIter(indexnode)
+
+	if r.cmp.Compare(index.last,key)<0{
+		err = ErrNotFound
+		return
+	}
+	index.seek(key)
+
+	links := indexnode.Links()
+	link := links[index.cur_key_num-1]
+
+	data := r.getDataIter_dag(link.Cid,nil, r.verifyChecksum, !ro.GetDontFillCache())
+	if !data.Seek(key) {
+		data.Release()
+		if err = data.Error(); err != nil {
+			return
+		}
+
+		// The nearest greater-than key is the first key of the next block.
+		if !index.Next() {
+			err = ErrNotFound
+			return
+		}
+
+		link = links[index.cur_key_num-1]
+		data = r.getDataIter_dag(link.Cid,nil, r.verifyChecksum, !ro.GetDontFillCache())
 		if !data.Next() {
 			data.Release()
 			if err = data.Error(); err == nil {
@@ -1136,4 +1351,22 @@ func NewReader(f io.ReaderAt, size int64, fd storage.FileDesc, cache *cache.Name
 	}
 
 	return r, nil
+}
+
+func New_subdag_Reader(tableroot cid.Cid, cache *cache.NamespaceGetter, bpool *util.BufferPool,o *opt.Options) (*Reader, error) {
+	r := &Reader{
+		index_cid:      tableroot,
+		cache:          cache,
+		bpool:          bpool,
+		o:              o,
+		cmp:            o.GetComparer(),
+		verifyChecksum: o.GetStrict(opt.StrictBlockChecksum),
+	}
+
+	out, err:= r.o.Shell.BlockGet_proto(r.index_cid.String())
+	if err != nil{
+		return nil, err
+	}
+	r.indexnode = out.(*dag.ProtoNode)
+	return r, err
 }

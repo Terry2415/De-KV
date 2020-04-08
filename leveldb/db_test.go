@@ -25,14 +25,14 @@ import (
 
 	"github.com/onsi/gomega"
 
-	"github.com/syndtr/goleveldb/leveldb/comparer"
-	"github.com/syndtr/goleveldb/leveldb/errors"
-	"github.com/syndtr/goleveldb/leveldb/filter"
-	"github.com/syndtr/goleveldb/leveldb/iterator"
-	"github.com/syndtr/goleveldb/leveldb/opt"
-	"github.com/syndtr/goleveldb/leveldb/storage"
-	"github.com/syndtr/goleveldb/leveldb/testutil"
-	"github.com/syndtr/goleveldb/leveldb/util"
+	"github.com/Terry2415/De-KV/leveldb/comparer"
+	"github.com/Terry2415/De-KV/leveldb/errors"
+	"github.com/Terry2415/De-KV/leveldb/filter"
+	"github.com/Terry2415/De-KV/leveldb/iterator"
+	"github.com/Terry2415/De-KV/leveldb/opt"
+	"github.com/Terry2415/De-KV/leveldb/storage"
+	"github.com/Terry2415/De-KV/leveldb/testutil"
+	"github.com/Terry2415/De-KV/leveldb/util"
 )
 
 func tkey(i int) []byte {
@@ -2581,6 +2581,7 @@ func TestDB_TableCompactionBuilder(t *testing.T) {
 	}
 	for _, t := range c.levels[0] {
 		rec.delTable(c.sourceLevel, t.fd.Num)
+		rec.delfiledag(c.sourceLevel, t.index_cid)
 	}
 	if err := s.commit(rec, false); err != nil {
 		t.Fatal(err)
@@ -2605,10 +2606,12 @@ func TestDB_TableCompactionBuilder(t *testing.T) {
 	}
 	for _, t := range c.levels[0] {
 		rec.delTable(c.sourceLevel, t.fd.Num)
+		rec.delfiledag(c.sourceLevel,t.index_cid)
 	}
 	// Move grandparent to level-3
 	for _, t := range v.levels[2] {
 		rec.delTable(2, t.fd.Num)
+		rec.delfiledag(2, t.index_cid)
 		rec.addTableFile(3, t)
 	}
 	if err := s.commit(rec, false); err != nil {

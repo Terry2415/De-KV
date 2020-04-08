@@ -10,9 +10,10 @@ package opt
 import (
 	"math"
 
-	"github.com/syndtr/goleveldb/leveldb/cache"
-	"github.com/syndtr/goleveldb/leveldb/comparer"
-	"github.com/syndtr/goleveldb/leveldb/filter"
+	"github.com/Terry2415/De-KV/leveldb/cache"
+	"github.com/Terry2415/De-KV/leveldb/comparer"
+	"github.com/Terry2415/De-KV/leveldb/filter"
+	"github.com/ipfs/go-ipfs-api"
 )
 
 const (
@@ -25,6 +26,7 @@ var (
 	DefaultBlockCacher                   = LRUCacher
 	DefaultBlockCacheCapacity            = 8 * MiB
 	DefaultBlockRestartInterval          = 16
+	//DefaultBlockSize                     = 4 * KiB
 	DefaultBlockSize                     = 4 * KiB
 	DefaultCompactionExpandLimitFactor   = 25
 	DefaultCompactionGPOverlapsFactor    = 10
@@ -145,6 +147,8 @@ type Options struct {
 	//
 	// The default value is nil
 	AltFilters []filter.Filter
+
+	Shell		*shell.Shell
 
 	// BlockCacher provides cache algorithm for LevelDB 'sorted table' block caching.
 	// Specify NoCacher to disable caching algorithm.

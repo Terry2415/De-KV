@@ -9,9 +9,9 @@ package leveldb
 import (
 	"sync/atomic"
 
-	"github.com/syndtr/goleveldb/leveldb/iterator"
-	"github.com/syndtr/goleveldb/leveldb/memdb"
-	"github.com/syndtr/goleveldb/leveldb/opt"
+	"github.com/Terry2415/De-KV/leveldb/iterator"
+	"github.com/Terry2415/De-KV/leveldb/memdb"
+	"github.com/Terry2415/De-KV/leveldb/opt"
 )
 
 const (
@@ -31,7 +31,7 @@ func (s *session) flushMemdb(rec *sessionRecord, mdb *memdb.DB, maxLevel int) (i
 	// Create sorted table.
 	iter := mdb.NewIterator(nil)
 	defer iter.Release()
-	t, n, err := s.tops.createFrom(iter)
+	t, n, err := s.tops.createFrom(iter)  //t变量包含了index node的cid
 	if err != nil {
 		return 0, err
 	}
@@ -43,7 +43,7 @@ func (s *session) flushMemdb(rec *sessionRecord, mdb *memdb.DB, maxLevel int) (i
 	// key-space is strictly incrementing it will not overlaps with
 	// higher level, thus maximum possible level is always picked, while
 	// overlapping deletion marker pushed into lower level.
-	// See: https://github.com/syndtr/goleveldb/issues/127.
+	// See: https://github.com/Terry2415/De-KV/issues/127.
 	flushLevel := s.pickMemdbLevel(t.imin.ukey(), t.imax.ukey(), maxLevel)
 	rec.addTableFile(flushLevel, t)
 

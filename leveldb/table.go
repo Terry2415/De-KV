@@ -12,12 +12,14 @@ import (
 	"sort"
 	"sync/atomic"
 
-	"github.com/syndtr/goleveldb/leveldb/cache"
-	"github.com/syndtr/goleveldb/leveldb/iterator"
-	"github.com/syndtr/goleveldb/leveldb/opt"
-	"github.com/syndtr/goleveldb/leveldb/storage"
-	"github.com/syndtr/goleveldb/leveldb/table"
-	"github.com/syndtr/goleveldb/leveldb/util"
+	"github.com/Terry2415/De-KV/leveldb/cache"
+	"github.com/Terry2415/De-KV/leveldb/iterator"
+	"github.com/Terry2415/De-KV/leveldb/opt"
+	"github.com/Terry2415/De-KV/leveldb/storage"
+	"github.com/Terry2415/De-KV/leveldb/table"
+	"github.com/Terry2415/De-KV/leveldb/util"
+	cid "gx/ipfs/QmTbxNB1NwDesLmKTscr4udL2tVP7MaxvXnD1D9yX7g3PN/go-cid"
+
 )
 
 // tFile holds basic information about a table.
@@ -26,6 +28,7 @@ type tFile struct {
 	seekLeft   int32
 	size       int64
 	imin, imax internalKey
+	index_cid cid.Cid
 }
 
 // Returns true if given key is after largest key of this table.
@@ -82,6 +85,16 @@ func tableFileFromRecord(r atRecord) *tFile {
 	return newTableFile(storage.FileDesc{Type: storage.TypeTable, Num: r.num}, r.size, r.imin, r.imax)
 }
 
+func tableFileFromRecord_dag(r filedag) *tFile {
+	f := &tFile{
+		fd: storage.FileDesc{Type: storage.TypeTable, Num: r.num},
+		size: r.size,
+		index_cid: r.index_cid,
+		imin: r.imin,
+		imax: r.imax,
+	}
+	return f
+}
 // tFiles hold multiple tFile.
 type tFiles []*tFile
 
@@ -409,6 +422,26 @@ func (t *tOps) createFrom(src iterator.Iterator) (f *tFile, n int, err error) {
 	return
 }
 
+func (t *tOps) open_subdag(f *tFile) (ch *cache.Handle, err error) {
+	ch = t.cache.Get_dag(0, f.index_cid, func() (size int, value cache.Value) {
+		var bcache *cache.NamespaceGetter
+		if t.bcache != nil {
+			bcache = &cache.NamespaceGetter{Cache: t.bcache, NS: uint64(f.fd.Num)}
+		}
+
+		var tr *table.Reader
+		tr,err = table.New_subdag_Reader(f.index_cid, bcache, t.bpool, t.s.o.Options)
+		if err != nil {
+			return 0, nil
+		}
+		return 1, tr
+	})
+	if ch == nil && err == nil {
+		err = ErrClosed
+	}
+	return
+}
+
 // Opens table. It returns a cache handle, which should
 // be released after use.
 func (t *tOps) open(f *tFile) (ch *cache.Handle, err error) {
@@ -448,6 +481,16 @@ func (t *tOps) find(f *tFile, key []byte, ro *opt.ReadOptions) (rkey, rvalue []b
 	}
 	defer ch.Release()
 	return ch.Value().(*table.Reader).Find(key, true, ro)
+}
+
+//find key/value pair in given file-subdag
+func (t *tOps) find_subdag(f *tFile, key []byte, ro *opt.ReadOptions) (rkey, rvalue []byte, err error) {
+	ch, err := t.open_subdag(f)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer ch.Release()
+	return	ch.Value().(*table.Reader).Find_subdag(key, true, ro, false)
 }
 
 // Finds key that is greater than or equal to the given key.
@@ -586,6 +629,7 @@ func (w *tWriter) finish() (f *tFile, err error) {
 		}
 	}
 	f = newTableFile(w.fd, int64(w.tw.BytesLen()), internalKey(w.first), internalKey(w.last))
+	f.index_cid = w.tw.Get_indexcid()
 	return
 }
 

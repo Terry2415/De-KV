@@ -12,8 +12,9 @@ import (
 	"io"
 	"strings"
 
-	"github.com/syndtr/goleveldb/leveldb/errors"
-	"github.com/syndtr/goleveldb/leveldb/storage"
+	"github.com/Terry2415/De-KV/leveldb/errors"
+	"github.com/Terry2415/De-KV/leveldb/storage"
+	cid "gx/ipfs/QmTbxNB1NwDesLmKTscr4udL2tVP7MaxvXnD1D9yX7g3PN/go-cid"
 )
 
 type byteReader interface {
@@ -30,6 +31,8 @@ const (
 	recCompPtr     = 5
 	recDelTable    = 6
 	recAddTable    = 7
+	recDelDAG      = 10
+	recAddDAG      = 11
 	// 8 was used for large value refs
 	recPrevJournalNum = 9
 )
@@ -47,6 +50,20 @@ type atRecord struct {
 	imax  internalKey
 }
 
+type filedag struct {
+	level int
+	num   int64
+	size  int64
+	imin  internalKey
+	imax  internalKey
+	index_cid   cid.Cid
+}
+
+type dtfiledag struct {
+	level int
+	index_cid   cid.Cid
+}
+
 type dtRecord struct {
 	level int
 	num   int64
@@ -61,8 +78,9 @@ type sessionRecord struct {
 	seqNum         uint64
 	compPtrs       []cpRecord
 	addedTables    []atRecord
+	addedfiledags  []filedag
 	deletedTables  []dtRecord
-
+	deletedfiledags[]dtfiledag
 	scratch [binary.MaxVarintLen64]byte
 	err     error
 }
@@ -111,8 +129,14 @@ func (p *sessionRecord) addTable(level int, num, size int64, imin, imax internal
 	p.addedTables = append(p.addedTables, atRecord{level, num, size, imin, imax})
 }
 
+func (p *sessionRecord) addfiledag(level int,num, size int64, imin, imax internalKey, index_cid cid.Cid) {
+	p.addedfiledags = append(p.addedfiledags,
+		filedag{level,num,size,imin,imax,index_cid})
+}
+
 func (p *sessionRecord) addTableFile(level int, t *tFile) {
 	p.addTable(level, t.fd.Num, t.size, t.imin, t.imax)
+	p.addfiledag(level,t.fd.Num,t.size, t.imin, t.imax, t.index_cid)
 }
 
 func (p *sessionRecord) resetAddedTables() {
@@ -120,14 +144,27 @@ func (p *sessionRecord) resetAddedTables() {
 	p.addedTables = p.addedTables[:0]
 }
 
+func (p *sessionRecord) resetAddeddags() {
+	p.addedfiledags = p.addedfiledags[:0]
+}
+
 func (p *sessionRecord) delTable(level int, num int64) {
 	p.hasRec |= 1 << recDelTable
 	p.deletedTables = append(p.deletedTables, dtRecord{level, num})
 }
 
+func (p *sessionRecord) delfiledag(level int, cid cid.Cid) {
+	p.deletedfiledags = append(p.deletedfiledags,
+		dtfiledag{level,cid})
+}
+
 func (p *sessionRecord) resetDeletedTables() {
 	p.hasRec &= ^(1 << recDelTable)
 	p.deletedTables = p.deletedTables[:0]
+}
+
+func (p *sessionRecord) resetDeleteddags() {
+	p.deletedfiledags = p.deletedfiledags[:0]
 }
 
 func (p *sessionRecord) putUvarint(w io.Writer, x uint64) {
@@ -191,6 +228,20 @@ func (p *sessionRecord) encode(w io.Writer) error {
 		p.putVarint(w, r.size)
 		p.putBytes(w, r.imin)
 		p.putBytes(w, r.imax)
+	}
+	for _, r := range p.deletedfiledags{
+		p.putUvarint(w, recDelDAG)
+		p.putUvarint(w, uint64(r.level))
+		p.putBytes(w, r.index_cid.Bytes())
+	}
+	for _, r := range p.addedfiledags {
+		p.putUvarint(w, recAddDAG)
+		p.putUvarint(w, uint64(r.level))
+		p.putVarint(w, r.num)
+		p.putVarint(w, r.size)
+		p.putBytes(w, r.imin)
+		p.putBytes(w, r.imax)
+		p.putBytes(w, r.index_cid.Bytes())
 	}
 	return p.err
 }
@@ -315,6 +366,24 @@ func (p *sessionRecord) decode(r io.Reader) error {
 			num := p.readVarint("del-table.num", br)
 			if p.err == nil {
 				p.delTable(level, num)
+			}
+		case recDelDAG:
+			level := p.readLevel("del-dag.level", br)
+			cid_byte := p.readBytes("del-dag.cid", br)
+			cid,_:= cid.Cast(cid_byte)
+			if p.err == nil {
+				p.delfiledag(level, cid)
+			}
+		case recAddDAG:
+			level := p.readLevel("add-table.level", br)
+			num := p.readVarint("add-table.num", br)
+			size := p.readVarint("add-table.size", br)
+			imin := p.readBytes("add-table.imin", br)
+			imax := p.readBytes("add-table.imax", br)
+			cid_byte := p.readBytes("add-dag.cid", br)
+			cid,_:= cid.Cast(cid_byte)
+			if p.err == nil {
+				p.addfiledag(level, num, size, imin, imax,cid)
 			}
 		}
 	}
